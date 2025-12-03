@@ -23,7 +23,7 @@
    - style.css
    - script.js
 3. Enable GitHub Pages in Settings
-4. Live at: https://YOUR-USERNAME.github.io/script-writer-pro
+4. Live at: https://YOUR-USERNAME.github.io/Script-Writer
 
 ## 📦 Files Included
 
