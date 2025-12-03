@@ -4,7 +4,13 @@ const state = {
     voiceRecognition: null,
     isRecording: false,
     copilotMemory: JSON.parse(localStorage.getItem('copilotMemory')) || [],
-    theme: localStorage.getItem('theme') || 'dark'
+    theme: localStorage.getItem('theme') || 'dark',
+    // New States for Audio Vis & Prompter
+    audioContext: null,
+    analyser: null,
+    visualizerAnimation: null,
+    prompterInterval: null,
+    isScrolling: false
 };
 
 function init() {
@@ -14,11 +20,16 @@ function init() {
     applyTheme(state.theme);
     updateCopilotMemory();
     renderScripts();
+    // Register PWA Service Worker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js');
+    }
 }
 
 function setupEventListeners() {
     document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.addEventListener('click', () => switchSection(btn.dataset.section));
+        if(btn.id !== 'toggleTheme') 
+            btn.addEventListener('click', () => switchSection(btn.dataset.section));
     });
     document.getElementById('menuToggle').addEventListener('click', () => {
         document.getElementById('sidebar').classList.toggle('active');
@@ -62,11 +73,29 @@ function setupEventListeners() {
     document.getElementById('exportAll').addEventListener('click', exportAllScripts);
     document.getElementById('viewHistoryBtn').addEventListener('click', showCopilotHistory);
     document.getElementById('clearMemoryBtn').addEventListener('click', clearCopilotMemory);
+
+    // NEW LISTENERS (Enhanced Features)
+    document.getElementById('teleprompterBtn').addEventListener('click', openTeleprompter);
+    document.getElementById('closePrompter').addEventListener('click', () => {
+        document.getElementById('teleprompterOverlay').classList.remove('active');
+        stopAutoScroll();
+    });
+    document.getElementById('toggleScroll').addEventListener('click', toggleAutoScroll);
+    document.getElementById('flipText').addEventListener('click', () => {
+        document.getElementById('prompterContent').classList.toggle('flipped');
+    });
+    
+    // Import Logic
+    document.getElementById('importJsonBtn').addEventListener('click', () => {
+        document.getElementById('importFile').click();
+    });
+    document.getElementById('importFile').addEventListener('change', importScripts);
 }
 
 function switchSection(sectionId) {
+    if(!sectionId) return;
     document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.section === sectionId);
+        if(btn.dataset.section) btn.classList.toggle('active', btn.dataset.section === sectionId);
     });
     document.querySelectorAll('.content-area').forEach(area => area.classList.remove('active'));
     document.getElementById(sectionId + 'Section').classList.add('active');
@@ -110,6 +139,7 @@ function setupVoiceRecognition() {
     state.voiceRecognition.onstart = () => {
         state.isRecording = true;
         document.getElementById('micIndicator').classList.add('active');
+        startVisualizer(); // Start Enhanced Visualizer
     };
     state.voiceRecognition.onresult = (event) => {
         let interimTranscript = '';
@@ -125,6 +155,7 @@ function setupVoiceRecognition() {
     state.voiceRecognition.onend = () => {
         state.isRecording = false;
         document.getElementById('micIndicator').classList.remove('active');
+        stopVisualizer(); // Stop Enhanced Visualizer
     };
 }
 
@@ -217,6 +248,9 @@ function saveCurrentScript() {
         state.scripts[state.currentScript].content = document.getElementById('scriptEditor').value;
         saveScripts();
         alert('Saved! 💾');
+    } else {
+        // If no script is selected, prompt creation
+        document.getElementById('newScriptModal').classList.add('active');
     }
 }
 
@@ -342,5 +376,111 @@ function applyTheme(theme) {
 window.addEventListener('resize', () => {
     if (window.innerWidth > 768) document.getElementById('sidebar').classList.remove('active');
 });
+
+// --- NEW FUNCTIONS (ADDED FEATURES) ---
+
+// 1. IMPORT FUNCTIONALITY
+function importScripts(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        try {
+            const data = JSON.parse(event.target.result);
+            // Smart Merge: Don't overwrite existing IDs if they clash, just append
+            if(data.scripts) {
+                state.scripts = { ...state.scripts, ...data.scripts };
+            } else if(data.content) {
+                // Single script file
+                const newId = Date.now();
+                state.scripts[newId] = { ...data, id: newId, name: "Imported Script" };
+            } else {
+                 // Try generic merge
+                state.scripts = { ...state.scripts, ...data };
+            }
+            saveScripts();
+            renderScripts();
+            alert('Backup Imported Successfully! 📥');
+            addToCopilotMemory('Imported Backup');
+        } catch (err) {
+            alert('Invalid file format!');
+        }
+    };
+    reader.readAsText(file);
+}
+
+// 2. AUDIO VISUALIZER
+function startVisualizer() {
+    const canvas = document.getElementById('audioVisualizer');
+    canvas.style.display = 'block';
+    
+    // Check if context exists
+    if(!state.audioContext) {
+         state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+        state.analyser = state.audioContext.createAnalyser();
+        const source = state.audioContext.createMediaStreamSource(stream);
+        source.connect(state.analyser);
+        
+        state.analyser.fftSize = 256;
+        const bufferLength = state.analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+        const ctx = canvas.getContext('2d');
+        
+        function draw() {
+            state.visualizerAnimation = requestAnimationFrame(draw);
+            state.analyser.getByteFrequencyData(dataArray);
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(45, 212, 191, 0.1)'; // Subtle background
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            const barWidth = (canvas.width / bufferLength) * 2.5;
+            let barHeight;
+            let x = 0;
+            
+            for(let i = 0; i < bufferLength; i++) {
+                barHeight = dataArray[i] / 3;
+                ctx.fillStyle = `rgb(${barHeight + 50}, 200, 200)`; // Teal-ish color
+                ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+                x += barWidth + 1;
+            }
+        }
+        draw();
+    }).catch(e => console.log("Mic error for visualizer"));
+}
+
+function stopVisualizer() {
+    if(state.visualizerAnimation) cancelAnimationFrame(state.visualizerAnimation);
+}
+
+// 3. TELEPROMPTER LOGIC
+function openTeleprompter() {
+    const text = document.getElementById('scriptEditor').value;
+    if(!text) return alert("Write a script first!");
+    
+    document.getElementById('prompterContent').innerText = text;
+    document.getElementById('teleprompterOverlay').classList.add('active');
+}
+
+function toggleAutoScroll() {
+    if(state.isScrolling) stopAutoScroll();
+    else startAutoScroll();
+}
+
+function startAutoScroll() {
+    state.isScrolling = true;
+    const speed = document.getElementById('scrollSpeed').value;
+    state.prompterInterval = setInterval(() => {
+        window.scrollBy(0, 1);
+    }, 20 - speed); 
+}
+
+function stopAutoScroll() {
+    state.isScrolling = false;
+    clearInterval(state.prompterInterval);
+}
 
 document.addEventListener('DOMContentLoaded', init);
