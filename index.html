@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Writer Pro - Advanced Script Management</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- SIDEBAR -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-header-icon">📝</div>
+                <h1>Script Pro</h1>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Work</div>
+                <button class="nav-btn active" data-section="editor">
+                    <span class="nav-icon">✍️</span>
+                    <span>Write & Edit</span>
+                </button>
+                <button class="nav-btn" data-section="voice">
+                    <span class="nav-icon">🎤</span>
+                    <span>Voice Match</span>
+                </button>
+                <button class="nav-btn" data-section="generate">
+                    <span class="nav-icon">✨</span>
+                    <span>AI Generate</span>
+                </button>
+                <button class="nav-btn" data-section="copilot">
+                    <span class="nav-icon">🤖</span>
+                    <span>Co-pilot</span>
+                </button>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Manage</div>
+                <button class="nav-btn" data-section="scripts">
+                    <span class="nav-icon">📚</span>
+                    <span>My Scripts</span>
+                </button>
+                <button class="nav-btn" data-section="export">
+                    <span class="nav-icon">📤</span>
+                    <span>Export</span>
+                </button>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="nav-btn" id="toggleTheme">
+                    <span class="nav-icon">🌙</span>
+                    <span>Dark Mode</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="top-bar">
+                <div class="top-bar-title" id="currentTitle">✍️ Write & Edit</div>
+                <div class="top-bar-controls">
+                    <button class="icon-btn" id="menuToggle">☰</button>
+                </div>
+            </div>
+
+            <!-- EDITOR SECTION -->
+            <div class="content-area active" id="editorSection">
+                <div class="editor-container">
+                    <div class="editor-panel">
+                        <div class="panel-header">
+                            <div class="panel-header-title">
+                                <span class="panel-header-icon">📄</span>
+                                <span>Script Content</span>
+                            </div>
+                            <div class="panel-controls">
+                                <button class="mini-btn" id="clearBtn">Clear</button>
+                                <button class="mini-btn" id="saveBtn">💾 Save</button>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <textarea id="scriptEditor" placeholder="Start writing your script here... Let your creativity flow! 🚀"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="editor-panel">
+                        <div class="panel-header">
+                            <div class="panel-header-title">
+                                <span class="panel-header-icon">🔊</span>
+                                <span>TTS Preview & Analytics</span>
+                            </div>
+                            <div class="panel-controls">
+                                <button class="mini-btn" id="playTTSBtn">Play</button>
+                                <button class="mini-btn" id="pauseTTSBtn">Pause</button>
+                                <button class="mini-btn" id="analyzeBtn">📊 Analyze</button>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div id="ttsPreview" style="white-space: pre-wrap; line-height: 1.6; color: rgba(203, 213, 225, 0.8); margin-bottom: 15px;">
+                                Select text or click Play to hear your script...
+                            </div>
+                            <div id="scriptAnalytics" style="background: rgba(45, 212, 191, 0.05); padding: 12px; border-radius: 8px; font-size: 12px; display: none;">
+                                <div style="margin: 5px 0;"><strong>Word Count:</strong> <span id="wordCount">0</span></div>
+                                <div style="margin: 5px 0;"><strong>Char Count:</strong> <span id="charCount">0</span></div>
+                                <div style="margin: 5px 0;"><strong>Estimated Read Time:</strong> <span id="readTime">0</span> mins</div>
+                                <div style="margin: 5px 0;"><strong>Unique Words:</strong> <span id="uniqueWords">0</span></div>
+                                <div style="margin: 5px 0;"><strong>Avg Words/Sentence:</strong> <span id="avgWords">0</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VOICE MATCHING SECTION -->
+            <div class="content-area" id="voiceSection">
+                <div style="max-width: 900px;">
+                    <div class="voice-section">
+                        <div class="voice-header">
+                            <span class="mic-indicator" id="micIndicator"></span>
+                            <h3>Voice Matching Engine</h3>
+                            <span class="copilot-status">Real-time word recognition & accuracy tracking</span>
+                        </div>
+
+                        <div class="voice-controls">
+                            <button class="btn-primary" id="startVoiceBtn">🎤 Start Recording</button>
+                            <button class="btn-secondary" id="stopVoiceBtn">⏹️ Stop</button>
+                            <button class="btn-secondary" id="clearVoiceBtn">🗑️ Clear</button>
+                        </div>
+
+                        <div class="match-progress">
+                            <div>Accuracy: <strong id="matchAccuracy">0</strong>% | Confidence: <strong id="confidence">0</strong>%</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill"></div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 15px;">
+                            <h4 style="margin-bottom: 10px; font-size: 14px;">Script Preview:</h4>
+                            <div id="scriptPreview" style="background: rgba(45, 212, 191, 0.05); padding: 12px; border-radius: 8px; font-size: 13px; max-height: 120px; overflow-y: auto; line-height: 1.5;"></div>
+                        </div>
+
+                        <div style="margin-bottom: 15px;">
+                            <h4 style="margin-bottom: 10px; font-size: 14px;">Spoken Text:</h4>
+                            <div id="spokenTranscript" style="background: rgba(139, 92, 246, 0.05); padding: 12px; border-radius: 8px; font-size: 13px; min-height: 60px; line-height: 1.5; border-left: 3px solid rgba(139, 92, 246, 0.3);">Click Start to begin speaking...</div>
+                        </div>
+
+                        <h4 style="margin-bottom: 10px; font-size: 14px;">Word Matching Details:</h4>
+                        <div id="wordMatches" style="max-height: 250px; overflow-y: auto;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GENERATE SECTION -->
+            <div class="content-area" id="generateSection">
+                <div>
+                    <h2 style="margin-bottom: 20px; font-size: 22px;">✨ AI Script Generator</h2>
+
+                    <div style="background: var(--color-bg-card); border: 1px solid rgba(45, 212, 191, 0.1); border-radius: 12px; padding: 20px; margin-bottom: 30px;">
+                        <h3 style="margin-bottom: 15px; font-size: 16px;">Quick Generate Templates</h3>
+                        <div class="generate-grid" id="generateTemplates">
+                            <div class="generate-card" data-template="git-tutorial">
+                                <div class="generate-card-icon">📦</div>
+                                <div class="generate-card-title">Git Tutorial</div>
+                                <div class="generate-card-desc">Step-by-step guide</div>
+                            </div>
+                            <div class="generate-card" data-template="github-workflow">
+                                <div class="generate-card-icon">🌳</div>
+                                <div class="generate-card-title">GitHub Workflow</div>
+                                <div class="generate-card-desc">Best practices</div>
+                            </div>
+                            <div class="generate-card" data-template="ml-basics">
+                                <div class="generate-card-icon">🤖</div>
+                                <div class="generate-card-title">ML Basics</div>
+                                <div class="generate-card-desc">Fundamentals</div>
+                            </div>
+                            <div class="generate-card" data-template="api-integration">
+                                <div class="generate-card-icon">🔗</div>
+                                <div class="generate-card-title">API Integration</div>
+                                <div class="generate-card-desc">REST APIs</div>
+                            </div>
+                            <div class="generate-card" data-template="deepseek">
+                                <div class="generate-card-icon">🔎</div>
+                                <div class="generate-card-title">DeepSeek Guide</div>
+                                <div class="generate-card-desc">Usage tutorial</div>
+                            </div>
+                            <div class="generate-card" data-template="colab-setup">
+                                <div class="generate-card-icon">🐍</div>
+                                <div class="generate-card-title">Google Colab</div>
+                                <div class="generate-card-desc">Setup guide</div>
+                            </div>
+                            <div class="generate-card" data-template="cnn-explained">
+                                <div class="generate-card-icon">👁️</div>
+                                <div class="generate-card-title">CNN Explained</div>
+                                <div class="generate-card-desc">Deep learning</div>
+                            </div>
+                            <div class="generate-card" data-template="custom">
+                                <div class="generate-card-icon">✨</div>
+                                <div class="generate-card-title">Custom Script</div>
+                                <div class="generate-card-desc">Your topic</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: var(--color-bg-card); border: 1px solid rgba(45, 212, 191, 0.1); border-radius: 12px; padding: 20px;">
+                        <h3 style="margin-bottom: 15px; font-size: 16px;">Custom Generation</h3>
+                        <div style="display: grid; gap: 12px;">
+                            <input type="text" class="modal-input" id="customTopic" placeholder="Enter topic (e.g., 'How to use React Hooks')">
+                            <textarea class="modal-input" id="customContext" placeholder="Add context or specific points (optional)" style="height: 80px; font-family: monospace; resize: vertical;"></textarea>
+                            <button class="btn-primary" id="generateCustomBtn">🚀 Generate Script</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COPILOT SECTION -->
+            <div class="content-area" id="copilotSection">
+                <div style="max-width: 900px;">
+                    <h2 style="margin-bottom: 20px; font-size: 22px;">🤖 Your Personal Co-pilot</h2>
+
+                    <div class="copilot-panel">
+                        <div class="copilot-header">
+                            <div class="copilot-avatar">🤖</div>
+                            <div>
+                                <h3>Script Assistant</h3>
+                                <div class="copilot-status" id="copilotMemory">Memories: <strong id="memoryCount">0</strong> | Analyzed: <strong id="analysisCount">0</strong></div>
+                            </div>
+                        </div>
+
+                        <h4 style="margin: 15px 0 10px 0; font-size: 13px; color: var(--color-text-secondary);">📋 Smart Suggestions Based on Your History:</h4>
+                        <div class="copilot-suggestions" id="copilotSuggestions">
+                            <div class="suggestion-chip">📚 Study Scripts</div>
+                            <div class="suggestion-chip">💻 Tech Tutorials</div>
+                            <div class="suggestion-chip">🎓 Educational</div>
+                            <div class="suggestion-chip">⚙️ Technical Docs</div>
+                        </div>
+
+                        <h4 style="margin: 15px 0 10px 0; font-size: 13px; color: var(--color-text-secondary);">🧠 What I Remember:</h4>
+                        <div class="copilot-memory" id="copilotMemoryContent">
+                            No memories yet. Create your first script to start learning your preferences!
+                        </div>
+
+                        <h4 style="margin: 15px 0 10px 0; font-size: 13px; color: var(--color-text-secondary);">📊 Your Statistics:</h4>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 15px;">
+                            <div style="background: rgba(45, 212, 191, 0.1); padding: 12px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 20px; font-weight: bold; color: var(--color-primary);" id="totalScripts">0</div>
+                                <div style="font-size: 11px; color: var(--color-text-secondary);">Total Scripts</div>
+                            </div>
+                            <div style="background: rgba(139, 92, 246, 0.1); padding: 12px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 20px; font-weight: bold; color: var(--color-accent-2);" id="totalWords">0</div>
+                                <div style="font-size: 11px; color: var(--color-text-secondary);">Total Words</div>
+                            </div>
+                            <div style="background: rgba(236, 72, 153, 0.1); padding: 12px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 20px; font-weight: bold; color: var(--color-accent-3);" id="favoriteCategory">N/A</div>
+                                <div style="font-size: 11px; color: var(--color-text-secondary);">Top Category</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 15px; display: grid; gap: 10px;">
+                            <button class="btn-primary" id="viewHistoryBtn">📚 View Full History</button>
+                            <button class="btn-secondary" id="exportStatsBtn">📊 Export Stats</button>
+                            <button class="btn-secondary" id="clearMemoryBtn">🗑️ Clear Memory</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCRIPTS SECTION -->
+            <div class="content-area" id="scriptsSection">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 10px;">
+                        <h2 style="font-size: 22px;">📚 My Scripts</h2>
+                        <input type="text" id="searchScripts" placeholder="🔍 Search scripts..." style="padding: 10px 15px; background: var(--color-bg-card); border: 1px solid rgba(45, 212, 191, 0.2); border-radius: 8px; color: var(--color-text-primary); flex: 1; max-width: 300px;">
+                        <button class="btn-primary" id="newScriptBtn" style="padding: 10px 20px;">+ New Script</button>
+                    </div>
+                    <div class="scripts-list" id="scriptsList"></div>
+                </div>
+            </div>
+
+            <!-- EXPORT SECTION -->
+            <div class="content-area" id="exportSection">
+                <div style="max-width: 900px;">
+                    <h2 style="margin-bottom: 20px; font-size: 22px;">📤 Export Your Scripts</h2>
+
+                    <div style="background: var(--color-bg-card); border: 1px solid rgba(45, 212, 191, 0.1); border-radius: 12px; padding: 20px; margin-bottom: 30px;">
+                        <h3 style="margin-bottom: 15px; font-size: 16px;">Export Formats</h3>
+                        <div class="export-options">
+                            <div class="export-option" id="exportTxt">
+                                <div class="export-icon">📄</div>
+                                <div class="export-title">Text (.txt)</div>
+                            </div>
+                            <div class="export-option" id="exportMd">
+                                <div class="export-icon">✍️</div>
+                                <div class="export-title">Markdown (.md)</div>
+                            </div>
+                            <div class="export-option" id="exportJson">
+                                <div class="export-icon">📦</div>
+                                <div class="export-title">JSON (.json)</div>
+                            </div>
+                            <div class="export-option" id="exportHtml">
+                                <div class="export-icon">🌐</div>
+                                <div class="export-title">HTML (.html)</div>
+                            </div>
+                            <div class="export-option" id="exportAll">
+                                <div class="export-icon">📚</div>
+                                <div class="export-title">All Scripts</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: var(--color-bg-card); border: 1px solid rgba(45, 212, 191, 0.1); border-radius: 12px; padding: 20px;">
+                        <h3 style="margin-bottom: 15px; font-size: 16px;">Recent Exports</h3>
+                        <div id="exportHistory" style="color: var(--color-text-secondary); font-size: 14px;">
+                            No exports yet.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <div class="modal" id="newScriptModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>📝</span>
+                <span>Create New Script</span>
+            </div>
+            <input type="text" class="modal-input" id="scriptNameInput" placeholder="Script name (e.g., Git Basics Tutorial)">
+            <input type="text" class="modal-input" id="scriptCategoryInput" placeholder="Category (e.g., Tech, Study, Other)">
+            <textarea class="modal-input" id="scriptTagsInput" placeholder="Tags (comma-separated, e.g., git, tutorial, beginner)" style="height: 60px; font-family: monospace; resize: vertical;"></textarea>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-primary" id="createScriptBtn">Create</button>
+                <button class="modal-btn modal-btn-secondary" id="closeNewScriptModal">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
