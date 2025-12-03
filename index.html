@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Script Writer Pro - Advanced Script Management</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
 </head>
 <body>
     <div class="container">
-        <!-- SIDEBAR -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="sidebar-header-icon">📝</div>
@@ -55,7 +55,6 @@
             </div>
         </div>
 
-        <!-- MAIN CONTENT -->
         <div class="main-content">
             <div class="top-bar">
                 <div class="top-bar-title" id="currentTitle">✍️ Write & Edit</div>
@@ -64,7 +63,6 @@
                 </div>
             </div>
 
-            <!-- EDITOR SECTION -->
             <div class="content-area active" id="editorSection">
                 <div class="editor-container">
                     <div class="editor-panel">
@@ -74,6 +72,7 @@
                                 <span>Script Content</span>
                             </div>
                             <div class="panel-controls">
+                                <button class="mini-btn" id="teleprompterBtn" style="color: var(--color-accent-3); border-color: var(--color-accent-3);">📺 Prompter</button>
                                 <button class="mini-btn" id="clearBtn">Clear</button>
                                 <button class="mini-btn" id="saveBtn">💾 Save</button>
                             </div>
@@ -111,7 +110,6 @@
                 </div>
             </div>
 
-            <!-- VOICE MATCHING SECTION -->
             <div class="content-area" id="voiceSection">
                 <div style="max-width: 900px;">
                     <div class="voice-section">
@@ -120,6 +118,8 @@
                             <h3>Voice Matching Engine</h3>
                             <span class="copilot-status">Real-time word recognition & accuracy tracking</span>
                         </div>
+
+                        <canvas id="audioVisualizer" width="800" height="80" style="width: 100%; height: 80px; background: rgba(0,0,0,0.2); border-radius: 8px; margin-bottom: 15px; display: none;"></canvas>
 
                         <div class="voice-controls">
                             <button class="btn-primary" id="startVoiceBtn">🎤 Start Recording</button>
@@ -150,7 +150,6 @@
                 </div>
             </div>
 
-            <!-- GENERATE SECTION -->
             <div class="content-area" id="generateSection">
                 <div>
                     <h2 style="margin-bottom: 20px; font-size: 22px;">✨ AI Script Generator</h2>
@@ -212,7 +211,6 @@
                 </div>
             </div>
 
-            <!-- COPILOT SECTION -->
             <div class="content-area" id="copilotSection">
                 <div style="max-width: 900px;">
                     <h2 style="margin-bottom: 20px; font-size: 22px;">🤖 Your Personal Co-pilot</h2>
@@ -264,7 +262,6 @@
                 </div>
             </div>
 
-            <!-- SCRIPTS SECTION -->
             <div class="content-area" id="scriptsSection">
                 <div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 10px;">
@@ -276,7 +273,6 @@
                 </div>
             </div>
 
-            <!-- EXPORT SECTION -->
             <div class="content-area" id="exportSection">
                 <div style="max-width: 900px;">
                     <h2 style="margin-bottom: 20px; font-size: 22px;">📤 Export Your Scripts</h2>
@@ -304,6 +300,11 @@
                                 <div class="export-icon">📚</div>
                                 <div class="export-title">All Scripts</div>
                             </div>
+                            <div class="export-option" id="importJsonBtn" style="border-color: var(--color-accent-2);">
+                                <div class="export-icon">📥</div>
+                                <div class="export-title">Import Backup</div>
+                            </div>
+                            <input type="file" id="importFile" style="display:none" accept=".json">
                         </div>
                     </div>
 
@@ -318,7 +319,17 @@
         </div>
     </div>
 
-    <!-- MODALS -->
+    <div id="teleprompterOverlay" class="teleprompter-overlay">
+        <div class="teleprompter-controls">
+            <button class="mini-btn" id="closePrompter">❌ Close</button>
+            <input type="range" id="scrollSpeed" min="1" max="10" value="3">
+            <span style="color:white; font-size:12px;">Speed</span>
+            <button class="mini-btn" id="toggleScroll">⏯️ Start/Stop</button>
+            <button class="mini-btn" id="flipText">↔️ Mirror</button>
+        </div>
+        <div id="prompterContent" class="prompter-content"></div>
+    </div>
+
     <div class="modal" id="newScriptModal">
         <div class="modal-content">
             <div class="modal-header">
