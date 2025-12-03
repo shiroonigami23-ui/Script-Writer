@@ -113,3 +113,24 @@ textarea::placeholder {color: rgba(203, 213, 225, 0.4);}
 .match-status {font-size: 12px;padding: 2px 8px;border-radius: 3px;background: var(--color-error);color: white;}
 .match-status.matched {background: var(--color-success);}
 .copilot-status {color: var(--color-text-secondary);}
+
+/* --- NEW FEATURE STYLES --- */
+/* TELEPROMPTER OVERLAY */
+.teleprompter-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: #000; z-index: 9999; display: none;
+    flex-direction: column; align-items: center;
+}
+.teleprompter-overlay.active { display: flex; }
+.teleprompter-controls {
+    position: fixed; bottom: 20px; z-index: 10001;
+    background: rgba(45, 212, 191, 0.2); padding: 10px 20px;
+    border-radius: 30px; display: flex; gap: 15px; align-items: center;
+    backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.1);
+}
+.prompter-content {
+    width: 80%; font-size: 48px; line-height: 1.5; color: white;
+    text-align: center; padding-top: 50vh; padding-bottom: 50vh;
+    font-weight: bold; transform-origin: center;
+}
+.prompter-content.flipped { transform: scaleX(-1); }
